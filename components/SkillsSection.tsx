@@ -1,27 +1,48 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { skills, techIcons } from '@/app/data/portfolio';
+import { skills, techCloud } from '@/app/data/portfolio';
 
-type SkillItem = { name: string; level: number; color: string };
+type Tab = 'languages' | 'frameworks' | 'tools';
 
-function SkillBar({ skill, visible }: { skill: SkillItem; visible: boolean }) {
+const TABS: { key: Tab; label: string; prefix: string }[] = [
+  { key: 'languages',  label: 'Languages',      prefix: 'lang' },
+  { key: 'frameworks', label: 'Frameworks & ML', prefix: 'fw' },
+  { key: 'tools',      label: 'DevOps & Tools',  prefix: 'tools' },
+];
+
+function SkillBar({
+  name, level, visible, delay = 0,
+}: {
+  name: string; level: number; visible: boolean; delay?: number;
+}) {
+  const pct = visible ? level : 0;
+  const color = level >= 85 ? '#00FF85' : level >= 75 ? '#00C6FF' : '#8B9BB4';
+
   return (
-    <div className="mb-4">
-      <div className="flex justify-between items-center mb-1.5">
-        <span className="text-sm" style={{ color: '#cbd5e1' }}>{skill.name}</span>
-        <span className="text-xs font-mono" style={{ color: '#00d9ff' }}>{skill.level}%</span>
+    <div className="mb-6">
+      <div className="flex justify-between items-center mb-2">
+        <span
+          className="text-sm font-medium"
+          style={{ color: '#CBD5E1', fontFamily: 'var(--font-body)' }}
+        >
+          {name}
+        </span>
+        <span
+          className="text-xs"
+          style={{ color, fontFamily: 'var(--font-mono)' }}
+        >
+          {level}%
+        </span>
       </div>
-      <div
-        className="w-full h-2 rounded-full overflow-hidden"
-        style={{ background: 'rgba(255,255,255,0.06)' }}
-      >
+      <div className="skill-track">
         <div
-          className="h-full rounded-full transition-all duration-1000 ease-out"
+          className="skill-fill"
           style={{
-            width: visible ? `${skill.level}%` : '0%',
-            background: `linear-gradient(90deg, ${skill.color}aa, ${skill.color})`,
-            boxShadow: visible ? `0 0 8px ${skill.color}66` : 'none',
+            width: `${pct}%`,
+            background: `linear-gradient(90deg, ${color}88, ${color})`,
+            boxShadow: visible ? `0 0 10px ${color}44` : 'none',
+            transitionDelay: `${delay}ms`,
           }}
         />
       </div>
@@ -29,133 +50,143 @@ function SkillBar({ skill, visible }: { skill: SkillItem; visible: boolean }) {
   );
 }
 
-type TabKey = keyof typeof skills;
-const tabs: { key: TabKey; label: string; icon: string }[] = [
-  { key: 'languages', label: 'Languages',  icon: '<>' },
-  { key: 'frontend',  label: 'Frontend',   icon: '{}' },
-  { key: 'backend',   label: 'Backend',    icon: '//' },
-  { key: 'ml',        label: 'ML / AI',    icon: '∑' },
-];
-
 export default function SkillsSection() {
-  const [activeTab, setActiveTab] = useState<TabKey>('languages');
-  const [visible, setVisible] = useState(false);
+  const [tab,  setTab]  = useState<Tab>('languages');
+  const [vis,  setVis]  = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
-      { threshold: 0.2 }
-    );
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVis(true); }, { threshold: 0.15 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
 
-  return (
-    <section id="skills" className="py-32 relative" style={{ background: 'rgba(10,22,40,0.5)' }}>
-      <div className="max-w-6xl mx-auto px-6" ref={ref}>
+  // Reset bars when tab changes so they re-animate
+  const [localVis, setLocalVis] = useState(false);
+  useEffect(() => {
+    setLocalVis(false);
+    const t = setTimeout(() => setLocalVis(true), 50);
+    return () => clearTimeout(t);
+  }, [tab]);
 
-        <div className="flex items-center gap-4 mb-16">
-          <span className="text-sm tracking-widest" style={{ color: '#00ff88' }}>02.</span>
-          <h2 className="section-title font-black tracking-widest uppercase underline-glow" style={{ color: '#e2e8f0' }}>
+  const show = vis && localVis;
+
+  return (
+    <section
+      id="skills"
+      className="py-32 relative"
+      style={{ background: 'rgba(10,17,31,0.4)' }}
+      ref={ref}
+    >
+      <div
+        className="absolute inset-x-0 top-0 h-px"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(255,0,85,0.2), transparent)' }}
+      />
+
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="mb-16">
+          <p className="section-label mb-3">02 / Skills</p>
+          <h2 className="section-title" style={{ fontFamily: 'var(--font-heading)' }}>
             Tech Stack
           </h2>
-          <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, rgba(0,217,255,0.3), transparent)' }} />
         </div>
 
-        {/* Scrolling tech icons banner */}
-        <div className="mb-16 overflow-hidden" style={{ maskImage: 'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)' }}>
-          <div
-            className="flex gap-6 w-max"
-            style={{ animation: 'scroll-x 20s linear infinite' }}
-          >
-            {[...techIcons, ...techIcons].map((icon, i) => (
-              <div
+        {/* Scrolling tech cloud banner */}
+        <div
+          className="mb-16 overflow-hidden rounded-xl"
+          style={{
+            background: 'rgba(10,17,31,0.6)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            maskImage: 'linear-gradient(90deg, transparent, black 8%, black 92%, transparent)',
+          }}
+        >
+          <div className="marquee-track flex gap-4 py-4 w-max" style={{ paddingLeft: 20 }}>
+            {[...techCloud, ...techCloud].map((tech, i) => (
+              <span
                 key={i}
-                className="px-4 py-2 rounded text-xs tracking-widest whitespace-nowrap"
+                className="px-4 py-1.5 rounded-lg text-xs whitespace-nowrap"
                 style={{
-                  border: '1px solid rgba(0,217,255,0.2)',
-                  color: '#00d9ff',
-                  background: 'rgba(0,217,255,0.04)',
+                  border: '1px solid rgba(0,255,133,0.15)',
+                  color: '#8B9BB4',
+                  background: 'rgba(0,255,133,0.04)',
+                  fontFamily: 'var(--font-mono)',
+                  letterSpacing: '0.05em',
                 }}
               >
-                {icon}
-              </div>
+                {tech}
+              </span>
             ))}
           </div>
         </div>
 
-        <style>{`
-          @keyframes scroll-x {
-            from { transform: translateX(0); }
-            to   { transform: translateX(-50%); }
-          }
-        `}</style>
-
-        <div className="grid lg:grid-cols-3 gap-12">
-
-          {/* Tab selector + bar chart */}
-          <div className="lg:col-span-2">
+        <div className="grid lg:grid-cols-5 gap-12">
+          {/* Left — tab content (3/5) */}
+          <div className="lg:col-span-3">
             {/* Tabs */}
-            <div className="flex gap-2 mb-8 flex-wrap">
-              {tabs.map(tab => (
+            <div className="flex gap-2 mb-10 flex-wrap">
+              {TABS.map(t => (
                 <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  className="px-4 py-2 text-xs tracking-widest uppercase font-mono transition-all duration-200 rounded"
+                  key={t.key}
+                  onClick={() => setTab(t.key)}
+                  className="px-4 py-2 rounded-lg text-xs transition-all duration-200"
                   style={{
-                    border: activeTab === tab.key
-                      ? '1px solid #00d9ff'
-                      : '1px solid rgba(255,255,255,0.1)',
-                    color: activeTab === tab.key ? '#00d9ff' : '#64748b',
-                    background: activeTab === tab.key ? 'rgba(0,217,255,0.08)' : 'transparent',
-                    boxShadow: activeTab === tab.key ? '0 0 10px rgba(0,217,255,0.2)' : 'none',
+                    border: tab === t.key ? '1px solid rgba(0,255,133,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                    color: tab === t.key ? '#00FF85' : '#8B9BB4',
+                    background: tab === t.key ? 'rgba(0,255,133,0.08)' : 'transparent',
+                    fontFamily: 'var(--font-mono)',
+                    letterSpacing: '0.06em',
+                    boxShadow: tab === t.key ? '0 0 16px rgba(0,255,133,0.12)' : 'none',
                   }}
                 >
-                  <span className="mr-2" style={{ color: '#00ff88' }}>{tab.icon}</span>
-                  {tab.label}
+                  {tab === t.key && <span style={{ color: '#00FF85', marginRight: 6 }}>▶</span>}
+                  {t.label}
                 </button>
               ))}
             </div>
 
             {/* Skill bars */}
             <div>
-              {skills[activeTab].map((skill, i) => (
-                <SkillBar key={`${activeTab}-${i}`} skill={skill} visible={visible} />
+              {skills[tab].map((s, i) => (
+                <SkillBar key={`${tab}-${s.name}`} name={s.name} level={s.level} visible={show} delay={i * 80} />
               ))}
             </div>
           </div>
 
-          {/* Right: hexagonal skill map (visual decoration) */}
-          <div className="flex flex-col gap-6">
+          {/* Right — core strengths + env (2/5) */}
+          <div className="lg:col-span-2 flex flex-col gap-5">
             <div
-              className="p-6 rounded-lg"
-              style={{ background: 'rgba(13,31,45,0.8)', border: '1px solid rgba(0,217,255,0.15)' }}
+              className="p-6 rounded-xl"
+              style={{ background: 'rgba(10,17,31,0.9)', border: '1px solid rgba(255,255,255,0.07)' }}
             >
-              <p className="text-xs tracking-widest uppercase mb-4" style={{ color: '#00ff88' }}>
+              <p
+                className="text-xs uppercase tracking-widest mb-5"
+                style={{ color: '#00FF85', fontFamily: 'var(--font-mono)' }}
+              >
                 // core strengths
               </p>
               {[
-                { label: 'Problem Solving',     icon: '🧩', level: 95 },
-                { label: 'System Design',       icon: '🏗️',  level: 80 },
-                { label: 'Algorithm Design',    icon: '⚡', level: 88 },
-                { label: 'Code Quality',        icon: '✨', level: 85 },
-                { label: 'Team Collaboration',  icon: '🤝', level: 90 },
+                { label: 'Problem Solving',    val: 95, icon: '🧩' },
+                { label: 'System Design',      val: 82, icon: '🏗️' },
+                { label: 'Algorithm Design',   val: 88, icon: '⚡' },
+                { label: 'Code Quality',       val: 85, icon: '✨' },
+                { label: 'Team Leadership',    val: 80, icon: '🤝' },
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 mb-3">
-                  <span>{item.icon}</span>
+                <div key={i} className="flex items-center gap-3 mb-4">
+                  <span className="text-lg w-7 flex-shrink-0">{item.icon}</span>
                   <div className="flex-1">
-                    <div className="flex justify-between text-xs mb-1">
-                      <span style={{ color: '#94a3b8' }}>{item.label}</span>
-                      <span style={{ color: '#00d9ff' }}>{item.level}%</span>
+                    <div className="flex justify-between mb-1.5">
+                      <span className="text-xs" style={{ color: '#8B9BB4' }}>{item.label}</span>
+                      <span className="text-xs" style={{ color: '#00C6FF', fontFamily: 'var(--font-mono)' }}>
+                        {item.val}%
+                      </span>
                     </div>
-                    <div className="h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                    <div className="skill-track">
                       <div
-                        className="h-full rounded-full transition-all duration-1000"
+                        className="skill-fill"
                         style={{
-                          width: visible ? `${item.level}%` : '0%',
-                          background: 'linear-gradient(90deg, #7c3aed, #00d9ff)',
-                          transitionDelay: `${i * 150}ms`,
+                          width: show ? `${item.val}%` : '0%',
+                          background: 'linear-gradient(90deg, #7C3AED, #00C6FF)',
+                          transitionDelay: `${i * 100 + 400}ms`,
                         }}
                       />
                     </div>
@@ -165,21 +196,29 @@ export default function SkillsSection() {
             </div>
 
             <div
-              className="p-6 rounded-lg"
-              style={{ background: 'rgba(13,31,45,0.8)', border: '1px solid rgba(0,255,136,0.15)' }}
+              className="p-6 rounded-xl"
+              style={{ background: 'rgba(10,17,31,0.9)', border: '1px solid rgba(255,255,255,0.07)' }}
             >
-              <p className="text-xs tracking-widest uppercase mb-4" style={{ color: '#00ff88' }}>
-                // tools & env
+              <p
+                className="text-xs uppercase tracking-widest mb-4"
+                style={{ color: '#FF0055', fontFamily: 'var(--font-mono)' }}
+              >
+                // daily driver
               </p>
               {[
-                '⌨️  NeoVim + Tmux',
-                '🐧  Linux (Arch)',
-                '🐳  Docker / K8s',
-                '☁️   AWS / GCP',
-                '🔀  Git + GitHub Actions',
-                '📊  Grafana + Prometheus',
+                { icon: '⌨️',  text: 'NeoVim + Tmux' },
+                { icon: '🐧',  text: 'Linux (Arch btw)' },
+                { icon: '🐳',  text: 'Docker / Kubernetes' },
+                { icon: '☁️',  text: 'AWS + GCP' },
+                { icon: '🔀',  text: 'Git + GitHub Actions' },
+                { icon: '📊',  text: 'Grafana + Prometheus' },
               ].map((item, i) => (
-                <p key={i} className="text-sm mb-2" style={{ color: '#64748b' }}>{item}</p>
+                <div key={i} className="flex items-center gap-3 mb-3">
+                  <span>{item.icon}</span>
+                  <span className="text-sm" style={{ color: '#8B9BB4', fontFamily: 'var(--font-mono)' }}>
+                    {item.text}
+                  </span>
+                </div>
               ))}
             </div>
           </div>

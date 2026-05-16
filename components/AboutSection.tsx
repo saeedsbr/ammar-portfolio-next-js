@@ -1,158 +1,217 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { personal, stats, achievements } from '@/app/data/portfolio';
+
+function StatCard({
+  icon, label, value, suffix = '', accent = '#00FF85', delay = 0,
+}: {
+  icon: string; label: string; value: number | string; suffix?: string; accent?: string; delay?: number;
+}) {
+  const [count, setCount] = useState(0);
+  const [vis,   setVis]   = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVis(true); }, { threshold: 0.3 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!vis || typeof value !== 'number') return;
+    const t = setTimeout(() => {
+      const steps = 50;
+      const inc = value / steps;
+      let curr = 0;
+      const id = setInterval(() => {
+        curr += inc;
+        if (curr >= value) { setCount(value); clearInterval(id); }
+        else setCount(Math.floor(curr));
+      }, 28);
+      return () => clearInterval(id);
+    }, delay);
+    return () => clearTimeout(t);
+  }, [vis, value, delay]);
+
+  return (
+    <div
+      ref={ref}
+      className="relative p-6 rounded-xl overflow-hidden"
+      style={{
+        background: 'rgba(10,17,31,0.9)',
+        border: `1px solid ${accent}22`,
+        boxShadow: vis ? `0 0 30px ${accent}08` : 'none',
+        transition: 'box-shadow 0.6s ease',
+      }}
+    >
+      {/* Corner accent */}
+      <div
+        className="absolute top-0 right-0 w-16 h-16"
+        style={{
+          background: `radial-gradient(circle at 100% 0%, ${accent}18 0%, transparent 70%)`,
+        }}
+      />
+      <div className="text-2xl mb-3">{icon}</div>
+      <div
+        className="text-4xl font-black mb-1"
+        style={{ fontFamily: 'var(--font-mono)', color: accent }}
+      >
+        {typeof value === 'number' ? count.toLocaleString() : value}
+        {suffix}
+      </div>
+      <div
+        className="text-xs uppercase tracking-widest"
+        style={{ color: '#475569', fontFamily: 'var(--font-mono)' }}
+      >
+        {label}
+      </div>
+    </div>
+  );
+}
 
 export default function AboutSection() {
   return (
-    <section id="about" className="py-32 relative grid-bg">
-      <div className="max-w-6xl mx-auto px-6">
+    <section id="about" className="py-32 relative">
+      {/* Subtle gradient top */}
+      <div
+        className="absolute top-0 inset-x-0 h-px"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(0,255,133,0.2), transparent)' }}
+      />
 
+      <div className="max-w-6xl mx-auto px-6">
         {/* Section heading */}
-        <div className="flex items-center gap-4 mb-16">
-          <span className="text-sm tracking-widest" style={{ color: '#00ff88' }}>01.</span>
-          <h2 className="section-title font-black tracking-widest uppercase underline-glow" style={{ color: '#e2e8f0' }}>
-            About Me
+        <div className="mb-16">
+          <p className="section-label mb-3">01 / About</p>
+          <h2 className="section-title" style={{ fontFamily: 'var(--font-heading)' }}>
+            Who I Am
           </h2>
-          <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, rgba(0,217,255,0.3), transparent)' }} />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-16 items-start">
 
-          {/* Left: bio + achievements */}
+          {/* Left: bio + edu + achievements */}
           <div>
-            {personal.bio.map((para, i) => (
-              <p
-                key={i}
-                className="mb-5 leading-relaxed"
-                style={{ color: i === 0 ? '#cbd5e1' : '#94a3b8' }}
-              >
-                {para}
-              </p>
-            ))}
+            <p
+              className="text-lg leading-relaxed mb-6"
+              style={{ color: '#CBD5E1', fontFamily: 'var(--font-body)' }}
+            >
+              {personal.bio}
+            </p>
+            <p className="leading-relaxed mb-10" style={{ color: '#8B9BB4', fontFamily: 'var(--font-body)' }}>
+              When I'm not coding, I'm usually reading distributed systems papers, grinding
+              LeetCode hard problems, or contributing to open-source projects. I believe in
+              writing code that is not just functional, but elegant and maintainable.
+            </p>
 
             {/* Education card */}
             <div
-              className="mt-8 p-5 rounded-lg tech-card"
-              style={{
-                background: 'rgba(13,31,45,0.8)',
-                border: '1px solid rgba(0,217,255,0.15)',
-              }}
+              className="p-5 rounded-xl mb-6"
+              style={{ background: 'rgba(10,17,31,0.9)', border: '1px solid rgba(0,255,133,0.12)' }}
             >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl mt-1">🎓</span>
-                <div>
-                  <p className="font-bold text-sm tracking-wider" style={{ color: '#e2e8f0' }}>
-                    {personal.degree}
-                  </p>
-                  <p className="text-sm" style={{ color: '#00d9ff' }}>{personal.university}</p>
-                  <div className="flex items-center gap-4 mt-2 text-xs" style={{ color: '#64748b' }}>
-                    <span>Class of {personal.graduation}</span>
-                    <span>|</span>
-                    <span style={{ color: '#00ff88' }}>GPA: {personal.gpa}</span>
-                  </div>
-                </div>
+              <div className="flex items-center gap-2 mb-3">
+                <span style={{ color: '#00FF85', fontFamily: 'var(--font-mono)', fontSize: '0.7rem' }}>🎓 EDUCATION</span>
+              </div>
+              <p
+                className="font-bold text-base mb-0.5"
+                style={{ fontFamily: 'var(--font-heading)', color: '#FFFFFF' }}
+              >
+                {personal.degree}
+              </p>
+              <p className="text-sm mb-2" style={{ color: '#00FF85' }}>{personal.university}</p>
+              <div className="flex gap-4 text-xs" style={{ color: '#475569', fontFamily: 'var(--font-mono)' }}>
+                <span>{personal.graduation}</span>
+                <span>|</span>
+                <span style={{ color: '#00FF85' }}>GPA {personal.gpa}/{personal.gpaMax}</span>
               </div>
             </div>
 
             {/* Achievements */}
-            <div className="mt-8 grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               {achievements.map((a, i) => (
                 <div
                   key={i}
-                  className="flex items-start gap-3 p-4 rounded-lg tech-card"
+                  className="flex items-start gap-3 p-4 rounded-xl"
                   style={{
-                    background: 'rgba(13,31,45,0.6)',
-                    border: '1px solid rgba(0,217,255,0.1)',
+                    background: 'rgba(10,17,31,0.7)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    transition: 'border-color 0.2s',
                   }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,255,133,0.2)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.06)'; }}
                 >
                   <span className="text-xl">{a.icon}</span>
                   <div>
-                    <p className="text-sm font-bold" style={{ color: '#e2e8f0' }}>{a.title}</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>{a.desc}</p>
+                    <p
+                      className="text-sm font-semibold"
+                      style={{ fontFamily: 'var(--font-heading)', color: '#FFFFFF' }}
+                    >
+                      {a.title}
+                    </p>
+                    <p className="text-xs mt-0.5" style={{ color: '#475569' }}>{a.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right: stats + hexagon avatar placeholder */}
-          <div className="flex flex-col gap-8">
-            {/* Avatar placeholder */}
-            <div className="flex justify-center">
-              <div className="relative w-64 h-64">
-                {/* Outer rotating ring */}
-                <div
-                  className="absolute inset-0 rounded-full"
-                  style={{
-                    border: '2px dashed rgba(0,217,255,0.3)',
-                    animation: 'rotate-ring 20s linear infinite',
-                  }}
-                />
-                {/* Inner counter ring */}
-                <div
-                  className="absolute inset-4 rounded-full"
-                  style={{
-                    border: '1px dashed rgba(0,255,136,0.2)',
-                    animation: 'counter-ring 15s linear infinite',
-                  }}
-                />
-                {/* Center content */}
-                <div
-                  className="absolute inset-8 rounded-full flex items-center justify-center flex-col gap-1"
-                  style={{
-                    background: 'linear-gradient(135deg, #0a1628, #0d1f2d)',
-                    border: '2px solid rgba(0,217,255,0.3)',
-                    boxShadow: '0 0 30px rgba(0,217,255,0.1)',
-                  }}
-                >
-                  <span className="text-4xl">👨‍💻</span>
-                  <span className="text-xs tracking-widest uppercase mt-1" style={{ color: '#00d9ff' }}>
-                    {personal.name.split(' ')[0]}
-                  </span>
-                </div>
+          {/* Right: 2×2 stat grid */}
+          <div>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <StatCard icon="🎯" label="LeetCode Rating"    value={stats.leetcodeRating} accent="#00FF85" delay={0} />
+              <StatCard icon="📦" label="GitHub Commits/yr"  value={stats.githubCommits}  suffix="+"  accent="#FF0055" delay={100} />
+              <StatCard icon="📄" label="Papers Read"         value={stats.papersRead}     accent="#00C6FF" delay={200} />
+              <StatCard icon="☕" label="Coffee Cups"         value="∞"                    accent="#FFB800"  delay={0} />
+            </div>
+
+            {/* Open source row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div
+                className="p-5 rounded-xl"
+                style={{ background: 'rgba(10,17,31,0.9)', border: '1px solid rgba(255,255,255,0.06)' }}
+              >
+                <p className="text-2xl font-black mb-1" style={{ fontFamily: 'var(--font-mono)', color: '#00FF85' }}>
+                  {stats.opensourcePrs}
+                </p>
+                <p className="text-xs uppercase tracking-widest" style={{ color: '#475569', fontFamily: 'var(--font-mono)' }}>
+                  OSS PRs Merged
+                </p>
+              </div>
+              <div
+                className="p-5 rounded-xl"
+                style={{ background: 'rgba(10,17,31,0.9)', border: '1px solid rgba(255,255,255,0.06)' }}
+              >
+                <p className="text-2xl font-black mb-1" style={{ fontFamily: 'var(--font-mono)', color: '#FF0055' }}>
+                  {stats.hackathonsWon}
+                </p>
+                <p className="text-xs uppercase tracking-widest" style={{ color: '#475569', fontFamily: 'var(--font-mono)' }}>
+                  Hackathons Won
+                </p>
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-4">
-              {stats.map((s, i) => (
-                <div
-                  key={i}
-                  className="p-5 rounded-lg text-center tech-card"
-                  style={{
-                    background: 'rgba(13,31,45,0.8)',
-                    border: '1px solid rgba(0,217,255,0.15)',
-                  }}
-                >
-                  <div className="text-2xl mb-1">{s.icon}</div>
-                  <div
-                    className="text-3xl font-black mb-1"
-                    style={{ color: i % 2 === 0 ? '#00d9ff' : '#00ff88' }}
-                  >
-                    {s.value}
-                  </div>
-                  <div className="text-xs tracking-widest uppercase" style={{ color: '#64748b' }}>
-                    {s.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Currently */}
+            {/* Currently box */}
             <div
-              className="p-5 rounded-lg"
-              style={{ background: 'rgba(13,31,45,0.8)', border: '1px solid rgba(0,255,136,0.2)' }}
+              className="mt-4 p-5 rounded-xl"
+              style={{
+                background: 'rgba(0,255,133,0.03)',
+                border: '1px solid rgba(0,255,133,0.15)',
+              }}
             >
-              <p className="text-xs tracking-widest uppercase mb-3" style={{ color: '#00ff88' }}>
-                // currently
+              <p
+                className="text-xs uppercase tracking-widest mb-3"
+                style={{ color: '#00FF85', fontFamily: 'var(--font-mono)' }}
+              >
+                // currently hacking on
               </p>
               {[
-                '🔬 Researching LLM fine-tuning techniques',
-                '🏗️  Building a distributed messaging system',
-                '📚 Reading: "Designing Data-Intensive Applications"',
-                '🎯 Preparing for technical interviews',
+                '🔬 Fine-tuning LLMs for code generation',
+                '🏗️  Distributed messaging system (Rust)',
+                '📚 "Designing Data-Intensive Applications"',
               ].map((item, i) => (
-                <p key={i} className="text-sm mb-2" style={{ color: '#94a3b8' }}>{item}</p>
+                <p key={i} className="text-sm mb-2" style={{ color: '#8B9BB4', fontFamily: 'var(--font-body)' }}>
+                  {item}
+                </p>
               ))}
             </div>
           </div>
