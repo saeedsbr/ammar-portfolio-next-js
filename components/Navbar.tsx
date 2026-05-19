@@ -5,32 +5,26 @@ import { personal, navItems } from '@/app/data/portfolio';
 import CommandPalette from './CommandPalette';
 
 export default function Navbar() {
-  const [scrolled, setScrolled]   = useState(false);
-  const [active,   setActive]     = useState('');
-  const [menuOpen, setMenuOpen]   = useState(false);
-  const [cmdOpen,  setCmdOpen]    = useState(false);
+  const [solid,    setSolid]    = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [cmdOpen,  setCmdOpen]  = useState(false);
 
-  /* ── Scroll tracking ── */
   useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 60);
-      const ids = navItems.map(n => n.href.slice(1));
-      for (const id of [...ids].reverse()) {
-        const el = document.getElementById(id);
-        if (el && window.scrollY >= el.offsetTop - 120) { setActive(id); break; }
-      }
+    const hero = document.querySelector('.hero');
+    const update = () => {
+      if (!hero) { setSolid(window.scrollY > 0); return; }
+      setSolid(hero.getBoundingClientRect().bottom <= 0);
     };
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); };
   }, []);
 
-  /* ── Cmd+K / Ctrl+K ── */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setCmdOpen(prev => !prev);
-      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); setCmdOpen(p => !p); }
+      if (e.key === 'Escape') { setMenuOpen(false); setCmdOpen(false); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -40,157 +34,60 @@ export default function Navbar() {
     <>
       <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
 
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-        style={{
-          background: scrolled ? 'rgba(5,11,20,0.92)' : 'transparent',
-          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : 'none',
-          backdropFilter: scrolled ? 'blur(16px)' : 'none',
-        }}
+      <header
+        className="site-header"
+        {...(solid ? { 'data-solid': '' } : {})}
+        {...(menuOpen ? { 'data-menu-open': '' } : {})}
       >
-        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+        <nav className="container header-inner" aria-label="Primary">
 
-          {/* Logo */}
-          <a
-            href="#"
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 700,
-              fontSize: '1.1rem',
-              letterSpacing: '-0.02em',
-              color: '#FFFFFF',
-            }}
-          >
-            <span style={{ color: '#00FF85' }}>{'<'}</span>
-            {personal.name.split(' ')[0]}
-            <span style={{ color: '#00FF85' }}>{'>'}</span>
+          {/* Brand */}
+          <a className="brand-link" href="#">
+            {personal.name.split(' ').map(w => w[0]).join('')}
           </a>
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-1">
-            {navItems.map(item => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="relative px-4 py-2 text-sm transition-colors duration-200"
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  color: active === item.href.slice(1) ? '#00FF85' : '#8B9BB4',
-                  letterSpacing: '0.05em',
-                }}
-                onMouseEnter={e => { if (active !== item.href.slice(1)) (e.currentTarget as HTMLElement).style.color = '#FFFFFF'; }}
-                onMouseLeave={e => { if (active !== item.href.slice(1)) (e.currentTarget as HTMLElement).style.color = '#8B9BB4'; }}
-              >
-                <span style={{ color: '#00FF85', fontSize: '0.65rem', marginRight: 4 }}>
-                  {item.icon}.
-                </span>
-                {item.label.toLowerCase()}
-                {active === item.href.slice(1) && (
-                  <span
-                    className="absolute bottom-0 left-4 right-4 h-px"
-                    style={{ background: 'linear-gradient(90deg, #00FF85, transparent)' }}
-                  />
-                )}
-              </a>
-            ))}
-
-            {/* Cmd+K button */}
-            <button
-              onClick={() => setCmdOpen(true)}
-              className="ml-3 flex items-center gap-2 px-3 py-1.5 rounded-md text-xs transition-all duration-200"
-              style={{
-                border: '1px solid rgba(255,255,255,0.1)',
-                color: '#8B9BB4',
-                background: 'rgba(255,255,255,0.03)',
-                fontFamily: 'var(--font-mono)',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,255,133,0.4)';
-                (e.currentTarget as HTMLElement).style.color = '#00FF85';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)';
-                (e.currentTarget as HTMLElement).style.color = '#8B9BB4';
-              }}
-            >
-              <span>⌘K</span>
-            </button>
-
-            {/* Resume */}
-            <a
-              href={personal.resumeUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="ml-2 px-4 py-2 text-xs rounded-md transition-all duration-200"
-              style={{
-                border: '1px solid rgba(0,255,133,0.4)',
-                color: '#00FF85',
-                background: 'rgba(0,255,133,0.06)',
-                fontFamily: 'var(--font-mono)',
-                letterSpacing: '0.08em',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.background = 'rgba(0,255,133,0.12)';
-                (e.currentTarget as HTMLElement).style.boxShadow = '0 0 16px rgba(0,255,133,0.2)';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.background = 'rgba(0,255,133,0.06)';
-                (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-              }}
-            >
-              resume.pdf
-            </a>
-          </div>
-
-          {/* Mobile hamburger */}
-          <button
-            className="md:hidden flex flex-col gap-1.5 p-1"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
-          >
-            {[0, 1, 2].map(i => (
-              <span
-                key={i}
-                className="block h-px w-6 transition-all"
-                style={{
-                  background: menuOpen ? '#00FF85' : '#8B9BB4',
-                  transform: menuOpen && i === 0 ? 'rotate(45deg) translate(4px, 4px)'
-                    : menuOpen && i === 2 ? 'rotate(-45deg) translate(4px, -4px)'
-                    : menuOpen && i === 1 ? 'scaleX(0)' : 'none',
-                }}
-              />
-            ))}
-          </button>
-        </div>
-
-        {/* Mobile menu */}
-        {menuOpen && (
-          <div
-            className="md:hidden px-6 pb-8 flex flex-col gap-1"
-            style={{ background: 'rgba(5,11,20,0.98)', borderTop: '1px solid rgba(255,255,255,0.06)' }}
-          >
+          {/* Centered pill nav */}
+          <div id="section-nav" className="section-nav" aria-label="Page sections">
             {navItems.map(item => (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 py-3"
-                style={{ color: '#8B9BB4', fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}
               >
-                <span style={{ color: '#00FF85' }}>{item.icon}.</span>
-                {item.label.toLowerCase()}
+                {item.label}
               </a>
             ))}
-            <button
-              onClick={() => { setMenuOpen(false); setCmdOpen(true); }}
-              className="flex items-center gap-3 py-3 mt-2"
-              style={{ color: '#8B9BB4', fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}
-            >
-              <span style={{ color: '#00FF85' }}>⌘</span>Command palette
-            </button>
           </div>
-        )}
-      </nav>
+
+          {/* Right side */}
+          <div style={{ position: 'absolute', insetBlockStart: '50%', insetInlineEnd: 0, transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+            <button
+              className="cmd-badge"
+              onClick={() => setCmdOpen(true)}
+              aria-label="Open command palette"
+            >
+              <span>⌘K</span>
+            </button>
+            <a className="resume-btn" href={personal.resumeUrl} target="_blank" rel="noreferrer">
+              Resume ↓
+            </a>
+          </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className="menu-toggle"
+            type="button"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(p => !p)}
+            style={{ marginInlineStart: 'auto' }}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </nav>
+      </header>
     </>
   );
 }

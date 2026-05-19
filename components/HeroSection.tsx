@@ -2,69 +2,65 @@
 
 import { useState, useEffect } from 'react';
 import { personal, stats } from '@/app/data/portfolio';
-import MagneticButton from './MagneticButton';
 
-/* ── Syntax-highlighted terminal lines ─────────────── */
+/* ── Terminal typing animation ──────────────────── */
 type Seg = { t: string; c: string };
-type Line = Seg[];
+type TLine = Seg[];
 
-const G = '#00FF85', W = '#FFFFFF', P = '#FF0055', M = '#8B9BB4', B = '#00C6FF';
+const DIM = '#9a9a9a', WHT = '#f5f5f5', GLD = '#c9a961', BLU = '#5b8db8';
 
-const TERMINAL_LINES: Line[] = [
+const CODE_LINES: TLine[] = [
   [
-    { t: '❯ ', c: M },
-    { t: 'const ', c: P },
-    { t: 'csStudent', c: B },
-    { t: ' = ', c: M },
-    { t: 'new ', c: P },
-    { t: 'Portfolio', c: G },
-    { t: '(', c: M },
-    { t: `"${personal.name}"`, c: G },
-    { t: ');', c: M },
+    { t: '> ', c: DIM },
+    { t: 'const ', c: BLU },
+    { t: 'dev', c: WHT },
+    { t: ' = ', c: DIM },
+    { t: 'new ', c: BLU },
+    { t: 'Portfolio', c: GLD },
+    { t: '(', c: DIM },
+    { t: `"${personal.name}"`, c: GLD },
+    { t: ');', c: DIM },
   ],
   [
-    { t: '❯ ', c: M },
-    { t: 'csStudent', c: B },
-    { t: '.skills', c: W },
-    { t: ' = ', c: M },
-    { t: '["React"', c: G },
-    { t: ', ', c: M },
-    { t: '"Rust"', c: G },
-    { t: ', ', c: M },
-    { t: '"PyTorch"]', c: G },
-    { t: ';', c: M },
+    { t: '> ', c: DIM },
+    { t: 'dev', c: WHT },
+    { t: '.skills', c: BLU },
+    { t: ' = ', c: DIM },
+    { t: '["React"', c: GLD },
+    { t: ', "Rust"', c: GLD },
+    { t: ', "PyTorch"]', c: GLD },
+    { t: ';', c: DIM },
   ],
   [
-    { t: '❯ ', c: M },
-    { t: 'csStudent', c: B },
-    { t: '.status', c: W },
-    { t: ' = ', c: M },
-    { t: '"Building the future"', c: G },
-    { t: ';', c: M },
+    { t: '> ', c: DIM },
+    { t: 'dev', c: WHT },
+    { t: '.status', c: BLU },
+    { t: ' = ', c: DIM },
+    { t: '"Building the future"', c: GLD },
+    { t: ';', c: DIM },
   ],
   [
-    { t: '❯ ', c: M },
-    { t: 'console', c: B },
-    { t: '.log(', c: M },
-    { t: 'await ', c: P },
-    { t: 'csStudent', c: B },
-    { t: '.getResume()', c: W },
-    { t: ');', c: M },
+    { t: '> ', c: DIM },
+    { t: 'console', c: WHT },
+    { t: '.log(', c: DIM },
+    { t: 'await ', c: BLU },
+    { t: 'dev', c: WHT },
+    { t: '.getResume()', c: WHT },
+    { t: ');', c: DIM },
   ],
 ];
 
-const OUTPUT_LINE: Seg[] = [
-  { t: '  ✓ ', c: G },
-  { t: `{ name: "${personal.name}", available: `, c: M },
-  { t: 'true', c: P },
-  { t: `, location: "${personal.location}" }`, c: M },
+const OUTPUT: Seg[] = [
+  { t: '  ✓ ', c: GLD },
+  { t: `{ name: "${personal.name}", available: `, c: DIM },
+  { t: 'true', c: BLU },
+  { t: `, location: "${personal.location}" }`, c: DIM },
 ];
 
-function totalLen(line: Line) { return line.reduce((s, seg) => s + seg.t.length, 0); }
-
-function renderUpTo(line: Line, chars: number): Line {
-  const out: Line = [];
-  let rem = chars;
+function totalLen(line: TLine) { return line.reduce((s, seg) => s + seg.t.length, 0); }
+function sliceLine(line: TLine, n: number): TLine {
+  const out: TLine = [];
+  let rem = n;
   for (const seg of line) {
     if (rem <= 0) break;
     if (rem >= seg.t.length) { out.push(seg); rem -= seg.t.length; }
@@ -73,160 +69,136 @@ function renderUpTo(line: Line, chars: number): Line {
   return out;
 }
 
-/* ── Stat counter animation ─────────────────────── */
-function CountUp({ target, suffix = '' }: { target: number | string; suffix?: string }) {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    if (typeof target !== 'number') return;
-    const steps = 60;
-    const inc = target / steps;
-    let current = 0;
-    const id = setInterval(() => {
-      current += inc;
-      if (current >= target) { setVal(target); clearInterval(id); }
-      else setVal(Math.floor(current));
-    }, 25);
-    return () => clearInterval(id);
-  }, [target]);
-  if (typeof target !== 'number') return <>{target}{suffix}</>;
-  return <>{val.toLocaleString()}{suffix}</>;
-}
-
-export default function HeroSection() {
-  /* ── Typing state ── */
-  const [doneLines, setDoneLines]   = useState<Line[]>([]);
-  const [curLine,   setCurLine]     = useState(0);
-  const [curChar,   setCurChar]     = useState(0);
-  const [showOut,   setShowOut]     = useState(false);
-  const [allDone,   setAllDone]     = useState(false);
+function Terminal() {
+  const [done,    setDone]    = useState<TLine[]>([]);
+  const [curLine, setCurLine] = useState(0);
+  const [curChar, setCurChar] = useState(0);
+  const [showOut, setShowOut] = useState(false);
+  const [idle,    setIdle]    = useState(false);
 
   useEffect(() => {
-    if (curLine >= TERMINAL_LINES.length) {
-      const t = setTimeout(() => { setShowOut(true); setAllDone(true); }, 300);
+    if (curLine >= CODE_LINES.length) {
+      setTimeout(() => { setShowOut(true); setTimeout(() => setIdle(true), 300); }, 250);
+      return;
+    }
+    const line  = CODE_LINES[curLine];
+    const total = totalLen(line);
+    if (curChar < total) {
+      const t = setTimeout(() => setCurChar(c => c + 1), 26);
       return () => clearTimeout(t);
     }
-    const line  = TERMINAL_LINES[curLine];
-    const total = totalLen(line);
-
-    if (curChar < total) {
-      const id = setTimeout(() => setCurChar(c => c + 1), 28);
-      return () => clearTimeout(id);
-    }
-    // line complete — wait then move to next
-    const t = setTimeout(() => {
-      setDoneLines(prev => [...prev, line]);
-      setCurLine(l => l + 1);
-      setCurChar(0);
-    }, 240);
+    const t = setTimeout(() => { setDone(p => [...p, line]); setCurLine(l => l + 1); setCurChar(0); }, 220);
     return () => clearTimeout(t);
   }, [curLine, curChar]);
 
-  const currentPartial = curLine < TERMINAL_LINES.length
-    ? renderUpTo(TERMINAL_LINES[curLine], curChar)
-    : null;
+  const partial = curLine < CODE_LINES.length ? sliceLine(CODE_LINES[curLine], curChar) : null;
 
   return (
-    <section
-      id="hero"
-      className="relative min-h-screen flex items-center scanline"
-      style={{ paddingTop: 90 }}
+    <div
+      style={{
+        background: '#0d0d0d',
+        border: '1px solid rgba(245,245,245,.1)',
+        borderRadius: 10,
+        overflow: 'hidden',
+        boxShadow: '0 24px 64px rgba(0,0,0,.55)',
+      }}
     >
-      {/* ── Glowing orbs ── */}
-      <div className="orb orb-green w-[600px] h-[600px] -top-32 -left-32 pointer-events-none" style={{ zIndex: 1 }} />
-      <div className="orb orb-pink  w-[400px] h-[400px]  top-1/2 right-0 pointer-events-none" style={{ zIndex: 1, animationDelay: '3s' }} />
-      <div className="orb orb-blue  w-[300px] h-[300px]  bottom-0 left-1/3 pointer-events-none" style={{ zIndex: 1, animationDelay: '8s' }} />
+      {/* Mac-style title bar */}
+      <div
+        style={{
+          background: '#181818',
+          borderBottom: '1px solid rgba(245,245,245,.07)',
+          padding: '10px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 7,
+        }}
+      >
+        {['#FF5F56', '#FFBD2E', '#27C93F'].map(c => (
+          <span key={c} style={{ width: 12, height: 12, borderRadius: '50%', background: c, display: 'inline-block' }} />
+        ))}
+        <span style={{ marginLeft: 'auto', marginRight: 'auto', transform: 'translateX(-28px)', fontSize: '.72rem', color: '#555' }}>
+          portfolio — bash
+        </span>
+      </div>
 
-      {/* ── Dot grid ── */}
-      <div className="dot-grid absolute inset-0 pointer-events-none" style={{ zIndex: 1, opacity: 0.6 }} />
+      {/* Terminal content */}
+      <div style={{ padding: '1.4rem 1.6rem', minHeight: 240, fontFamily: 'monospace', fontSize: '.88rem', lineHeight: 1.9 }}>
+        {done.map((line, i) => (
+          <div key={i} style={{ display: 'flex', flexWrap: 'wrap' }}>
+            {line.map((seg, j) => <span key={j} style={{ color: seg.c }}>{seg.t}</span>)}
+          </div>
+        ))}
+        {partial && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
+            {partial.map((seg, j) => <span key={j} style={{ color: seg.c }}>{seg.t}</span>)}
+            <span className="blink" style={{ display: 'inline-block', width: 8, height: 15, background: GLD, marginLeft: 1 }} />
+          </div>
+        )}
+        {showOut && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: 2 }}>
+            {OUTPUT.map((seg, j) => <span key={j} style={{ color: seg.c }}>{seg.t}</span>)}
+          </div>
+        )}
+        {idle && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
+            <span style={{ color: DIM }}>{'>'}</span>
+            <span className="blink" style={{ display: 'inline-block', width: 8, height: 15, background: GLD }} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 w-full">
-        <div className="grid lg:grid-cols-2 gap-14 items-center">
+export default function HeroSection() {
+  return (
+    <section className="hero" aria-labelledby="hero-title">
+      {/* Subtle background texture */}
+      <div className="hero-bg">
+        <div className="hero-noise" />
+        {/* Faint radial gradient at top-left */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'radial-gradient(ellipse 60% 55% at 10% 15%, rgba(201,169,97,.06) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+      </div>
 
-          {/* ── Left: name + bio + CTAs ── */}
+      <div className="container hero-content">
+        <div style={{ display: 'grid', gap: '3.5rem', alignItems: 'center' }} className="hero-grid">
+
+          {/* Left: headline */}
           <div>
-            {/* Status badge */}
-            <div
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs mb-8"
-              style={{
-                border: '1px solid rgba(0,255,133,0.25)',
-                background: 'rgba(0,255,133,0.06)',
-                fontFamily: 'var(--font-mono)',
-                letterSpacing: '0.08em',
-              }}
-            >
+            {/* Status */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '.55rem', marginBottom: '1.4rem' }}>
               <span
-                className="w-2 h-2 rounded-full ring-pulse"
-                style={{ background: '#00FF85', boxShadow: '0 0 6px #00FF85' }}
+                className="status-dot pulse-dot"
+                style={{ background: '#c9a961' }}
               />
-              <span style={{ color: '#00FF85' }}>{personal.status}</span>
+              <span style={{ color: 'var(--text-3)', fontSize: '.82rem', fontWeight: 600 }}>
+                {personal.status}
+              </span>
             </div>
 
-            {/* Name */}
-            <div style={{ fontFamily: 'var(--font-heading)' }}>
-              <p
-                className="text-sm mb-2"
-                style={{ color: '#8B9BB4', fontFamily: 'var(--font-mono)', letterSpacing: '0.15em' }}
-              >
-                Hello, World! I'm
-              </p>
-              <h1
-                className="glitch font-black leading-none mb-4"
-                data-text={personal.name}
-                style={{
-                  fontSize: 'clamp(3rem, 8vw, 5.5rem)',
-                  letterSpacing: '-0.03em',
-                }}
-              >
-                <span className="text-gradient">{personal.name}</span>
-              </h1>
-              <p
-                className="mb-3 font-semibold"
-                style={{ fontSize: 'clamp(1.1rem, 3vw, 1.5rem)', color: '#8B9BB4', letterSpacing: '-0.01em' }}
-              >
-                {personal.title} /{' '}
-                <span style={{ color: '#FFFFFF' }}>{personal.subtitle}</span>
-              </p>
-            </div>
+            <h1 id="hero-title">{personal.name}</h1>
 
-            <p
-              className="mb-8 leading-relaxed max-w-md"
-              style={{ color: '#8B9BB4', fontFamily: 'var(--font-body)' }}
-            >
-              {personal.bio}
-            </p>
+            <p className="hero-sub">{personal.title}. {personal.subtitle.split('·')[0].trim()}.</p>
 
-            {/* CTAs */}
-            <div className="flex flex-wrap gap-4 mb-10">
-              <MagneticButton
-                href="#projects"
-                className="px-7 py-3.5 rounded-lg font-semibold text-sm"
-                style={{
-                  background: '#00FF85',
-                  color: '#050B14',
-                  fontFamily: 'var(--font-heading)',
-                  letterSpacing: '-0.01em',
-                  boxShadow: '0 0 30px rgba(0,255,133,0.3)',
-                }}
-              >
+            <p className="hero-desc">{personal.bio}</p>
+
+            <div className="hero-actions">
+              <a className="btn-primary" href={personal.resumeUrl} download>
+                Download CV
+              </a>
+              <a className="btn-ghost" href="#projects">
                 View Projects ↗
-              </MagneticButton>
-              <MagneticButton
-                href="#contact"
-                className="px-7 py-3.5 rounded-lg font-semibold text-sm"
-                style={{
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  color: '#FFFFFF',
-                  background: 'rgba(255,255,255,0.04)',
-                  fontFamily: 'var(--font-heading)',
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                Get In Touch
-              </MagneticButton>
+              </a>
             </div>
 
-            {/* Social row */}
-            <div className="flex items-center gap-6">
+            {/* Social links */}
+            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '2rem', alignItems: 'center' }}>
               {[
                 { label: 'GitHub',   href: personal.github },
                 { label: 'LinkedIn', href: personal.linkedin },
@@ -237,115 +209,33 @@ export default function HeroSection() {
                   href={s.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-xs tracking-widest uppercase transition-colors duration-200"
-                  style={{ color: '#475569', fontFamily: 'var(--font-mono)' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#00FF85'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#475569'; }}
+                  style={{ color: 'var(--text-3)', fontSize: '.82rem', fontWeight: 600, textDecoration: 'none' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--gold)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-3)'; }}
                 >
                   {s.label}
                 </a>
               ))}
-              <span className="text-xs ml-auto" style={{ color: '#333d4d', fontFamily: 'var(--font-mono)' }}>
-                ⌘K to explore
-              </span>
             </div>
           </div>
 
-          {/* ── Right: terminal ── */}
-          <div className="float">
-            <div className="term" style={{ boxShadow: '0 0 60px rgba(0,255,133,0.08), 0 40px 80px rgba(0,0,0,0.4)' }}>
-              {/* Title bar */}
-              <div className="term-bar">
-                <span className="term-dot" style={{ background: '#FF5F56' }} />
-                <span className="term-dot" style={{ background: '#FFBD2E' }} />
-                <span className="term-dot" style={{ background: '#27C93F' }} />
-                <span
-                  className="ml-4 text-xs flex-1 text-center -ml-12"
-                  style={{ color: '#475569', fontFamily: 'var(--font-mono)' }}
-                >
-                  ~/portfolio.sh
-                </span>
-                <span
-                  className="text-xs px-2 py-0.5 rounded"
-                  style={{
-                    background: 'rgba(0,255,133,0.1)',
-                    color: '#00FF85',
-                    border: '1px solid rgba(0,255,133,0.2)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.65rem',
-                  }}
-                >
-                  bash
-                </span>
-              </div>
+          {/* Right: terminal */}
+          <div>
+            <Terminal />
 
-              {/* Terminal body */}
-              <div
-                className="p-6 text-sm leading-7"
-                style={{ minHeight: 280, fontFamily: 'var(--font-mono)' }}
-              >
-                {/* Completed lines */}
-                {doneLines.map((line, i) => (
-                  <div key={i} className="flex flex-wrap">
-                    {line.map((seg, j) => (
-                      <span key={j} style={{ color: seg.c }}>{seg.t}</span>
-                    ))}
-                  </div>
-                ))}
-
-                {/* Current line typing */}
-                {currentPartial && (
-                  <div className="flex flex-wrap items-center">
-                    {currentPartial.map((seg, j) => (
-                      <span key={j} style={{ color: seg.c }}>{seg.t}</span>
-                    ))}
-                    <span className="cursor w-2 h-5 ml-0.5 inline-block" style={{ background: '#00FF85' }} />
-                  </div>
-                )}
-
-                {/* Output line */}
-                {showOut && (
-                  <div className="flex flex-wrap mt-1">
-                    {OUTPUT_LINE.map((seg, j) => (
-                      <span key={j} style={{ color: seg.c }}>{seg.t}</span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Final blinking cursor */}
-                {allDone && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <span style={{ color: G }}>❯</span>
-                    <span className="cursor w-2 h-5 inline-block" style={{ background: '#00FF85' }} />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* ── Mini stat strip below terminal ── */}
-            <div className="grid grid-cols-4 gap-3 mt-4">
+            {/* Stat strip */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--line-strong)', border: '1px solid var(--line-strong)', borderRadius: 8, overflow: 'hidden', marginTop: '.75rem' }}>
               {[
-                { label: 'LeetCode',  value: stats.leetcodeRating, suffix: '',  icon: '🏅' },
-                { label: 'Commits',   value: stats.githubCommits,  suffix: '+', icon: '📦' },
-                { label: 'Papers',    value: stats.papersRead,      suffix: '',  icon: '📄' },
-                { label: 'Hackathons',value: stats.hackathonsWon,   suffix: '×', icon: '🏆' },
+                { label: 'LeetCode',  value: stats.leetcodeRating.toString() },
+                { label: 'Commits/yr', value: `${stats.githubCommits}+` },
+                { label: 'Papers',    value: stats.papersRead.toString() },
+                { label: 'Hackathons', value: `${stats.hackathonsWon}×` },
               ].map(s => (
-                <div
-                  key={s.label}
-                  className="p-3 rounded-lg text-center"
-                  style={{
-                    background: 'rgba(10,17,31,0.8)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                  }}
-                >
-                  <div className="text-lg mb-0.5">{s.icon}</div>
-                  <div
-                    className="text-base font-black"
-                    style={{ fontFamily: 'var(--font-mono)', color: '#00FF85' }}
-                  >
-                    <CountUp target={s.value} suffix={s.suffix} />
+                <div key={s.label} style={{ background: 'var(--surface)', padding: '1rem .85rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--gold)', letterSpacing: '-.03em', lineHeight: 1 }}>
+                    {s.value}
                   </div>
-                  <div className="text-xs mt-0.5" style={{ color: '#475569', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ fontSize: '.65rem', fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '.05em', marginTop: '.35rem' }}>
                     {s.label}
                   </div>
                 </div>
@@ -354,23 +244,20 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="flex flex-col items-center gap-3 mt-20">
-          <span
-            className="text-xs tracking-widest uppercase"
-            style={{ color: '#2d3748', fontFamily: 'var(--font-mono)' }}
-          >
+        {/* Scroll hint */}
+        <div style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem' }}>
+          <span style={{ color: 'var(--text-3)', fontSize: '.72rem', fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase' }}>
             scroll
           </span>
-          <div
-            className="w-px h-16"
-            style={{
-              background: 'linear-gradient(to bottom, #00FF85, transparent)',
-              animation: 'float 2s ease-in-out infinite',
-            }}
-          />
+          <div style={{ width: 1, height: 40, background: 'linear-gradient(to bottom, var(--gold-muted), transparent)' }} />
         </div>
       </div>
+
+      <style>{`
+        @media (min-width: 768px) {
+          .hero-grid { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+        }
+      `}</style>
     </section>
   );
 }

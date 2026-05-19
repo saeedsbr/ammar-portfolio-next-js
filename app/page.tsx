@@ -1,4 +1,3 @@
-import MatrixBackground  from "@/components/MatrixBackground";
 import Navbar           from "@/components/Navbar";
 import HeroSection      from "@/components/HeroSection";
 import AboutSection     from "@/components/AboutSection";
@@ -10,16 +9,17 @@ import Footer           from "@/components/Footer";
 
 export default function Home() {
   return (
-    <main style={{ background: '#050B14', position: 'relative' }}>
-      <MatrixBackground />
+    <>
       <Navbar />
-      <HeroSection />
-      <AboutSection />
-      <SkillsSection />
-      <ProjectsSection />
-      <ExperienceSection />
-      <ContactSection />
+      <main>
+        <HeroSection />
+        <AboutSection />
+        <SkillsSection />
+        <ProjectsSection />
+        <ExperienceSection />
+        <ContactSection />
+      </main>
       <Footer />
-    </main>
+    </>
   );
 }
