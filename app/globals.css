@@ -297,8 +297,9 @@ a:focus-visible  { border-radius: 4px; outline: 2px solid var(--gold); outline-o
 .hero-noise {
   position: absolute;
   inset: 0;
-  opacity: .45;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  opacity: .05;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/c/hCAAAABXRSTlMwkKy/wE6tT1EAAAAdSURBVDjLY2AAg0wMTAEwI4RMg0k4jEIZmO2gCQIAo3ID2rQ91vUAAAAASUVORK5CYII=");
+  background-repeat: repeat;
 }
 
 .hero-content {
