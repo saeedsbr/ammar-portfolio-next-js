@@ -241,8 +241,9 @@ const personal = {
     leetcode: "",
     resumeUrl: "/resume.pdf",
     university: "YOUR UNIVERSITY",
-    degree: "YOUR DEGREE",
-    graduation: "YOUR GRADUATION YEAR",
+    degree: "Bachelor of Computer Science",
+    graduation: "2024 - 2028",
+    university: "University of Management and Technology, Lahore",
     gpa: "",
     gpaMax: "4.0",
     status: "Open to opportunities",
@@ -421,6 +422,22 @@ const experience = [
     //   tech: ["Tech1", "Tech2"],
     //   color: "#00FF85",
     // },
+    {
+        type: "education",
+        title: "Bachelor of Computer Science",
+        org: "University of Management and Technology (UMT), Lahore",
+        location: "Lahore, Pakistan",
+        period: "2024 - 2028",
+        bullets: [
+            "Pursuing Bachelor of Computer Science (2024-2028)"
+        ],
+        tech: [
+            "Algorithms",
+            "Data Structures",
+            "Web Development"
+        ],
+        color: "#00C6FF"
+    },
     {
         type: "education",
         title: "Intermediate in Computer Science",

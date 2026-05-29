@@ -16,8 +16,9 @@ export const personal = {
   leetcode: "",
   resumeUrl: "/resume.pdf",
   university: "YOUR UNIVERSITY",       // TODO: fill manually
-  degree: "YOUR DEGREE",               // TODO: fill manually
-  graduation: "YOUR GRADUATION YEAR",  // TODO: fill manually
+  degree: "Bachelor of Computer Science",
+  graduation: "2024 - 2028",
+  university: "University of Management and Technology, Lahore",
   gpa: "",                             // TODO: fill manually
   gpaMax: "4.0",
   status: "Open to opportunities",
@@ -121,6 +122,18 @@ export const experience = [
   //   tech: ["Tech1", "Tech2"],
   //   color: "#00FF85",
   // },
+  {
+    type: "education" as const,
+    title: "Bachelor of Computer Science",
+    org: "University of Management and Technology (UMT), Lahore",
+    location: "Lahore, Pakistan",
+    period: "2024 - 2028",
+    bullets: [
+      "Pursuing Bachelor of Computer Science (2024-2028)",
+    ],
+    tech: ["Algorithms", "Data Structures", "Web Development"],
+    color: "#00C6FF",
+  },
   {
     type: "education" as const,
     title: "Intermediate in Computer Science",
