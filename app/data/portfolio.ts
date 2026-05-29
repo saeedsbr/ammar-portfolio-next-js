@@ -5,10 +5,10 @@
 export const personal = {
   name: "Muhammad Talha Saeed",
   title: "Full-Stack Developer & Architect",
-  subtitle: "Java · Spring Boot · Next.js · Laravel",
+  subtitle: "Laravel · Next.js · C++",
   email: "italha.saeedsbr@gmail.com",
-  phone: "",
-  location: "Lahore, Pakistan",
+  phone: "+92 328 2255882",
+  location: "Gujrat, Pakistan",
   github: "https://github.com/saeedsbr",
   githubUsername: "saeedsbr",
   linkedin: "https://www.linkedin.com/in/talha-saeed-0437a6329/",
@@ -21,7 +21,7 @@ export const personal = {
   gpa: "",                             // TODO: fill manually
   gpaMax: "4.0",
   status: "Open to opportunities",
-  bio: "I architect full-stack systems — from robust Spring Boot APIs to pixel-perfect Next.js UIs. Focused on clean code, scalable architecture, and enterprise-grade applications that deliver real-world impact.",
+  bio: "Motivated software developer with hands-on experience building responsive web interfaces and practical full-stack applications. Strong foundation in Laravel, PHP, Next.js, Spring Boot and C++ programming. Focused on clean structure, team-ready code and real user workflows.",
 };
 
 export const stats = {
@@ -35,28 +35,25 @@ export const stats = {
 
 export const skills = {
   languages: [
-    { name: "Java",       level: 93 },
-    { name: "TypeScript", level: 82 },
-    { name: "PHP",        level: 73 },
-    { name: "JavaScript", level: 80 },
-    { name: "Python",     level: 65 },
-    { name: "C++",        level: 60 },
+    { name: "PHP",        level: 82 },
+    { name: "C++",        level: 75 },
+    { name: "Java",       level: 70 },
+    { name: "TypeScript", level: 68 },
+    { name: "JavaScript", level: 68 },
+    { name: "SQL",        level: 70 },
   ],
   frameworks: [
-    { name: "Spring Boot",     level: 90 },
-    { name: "Next.js / React", level: 86 },
-    { name: "Laravel",         level: 76 },
-    { name: "Tailwind CSS",    level: 82 },
-    { name: "Hibernate / JPA", level: 78 },
-    { name: "Node.js",         level: 70 },
+    { name: "Laravel",         level: 88 },
+    { name: "Next.js / React", level: 80 },
+    { name: "Spring Boot",     level: 70 },
+    { name: "HTML/CSS",        level: 78 },
+    { name: "Tailwind CSS",    level: 72 },
   ],
   tools: [
-    { name: "Git / GitHub",       level: 90 },
-    { name: "MySQL / PostgreSQL", level: 80 },
-    { name: "MongoDB",            level: 75 },
-    { name: "Docker",             level: 65 },
-    { name: "Redis",              level: 70 },
-    { name: "Linux / Shell",      level: 74 },
+    { name: "MySQL",        level: 78 },
+    { name: "Git / GitHub", level: 85 },
+    { name: "VS Code",      level: 80 },
+    { name: "REST APIs",    level: 75 },
   ],
 };
 
@@ -126,17 +123,40 @@ export const experience = [
   // },
   {
     type: "education" as const,
-    title: "YOUR DEGREE",          // TODO: fill manually
-    org: "YOUR UNIVERSITY",        // TODO: fill manually
-    location: "Lahore, Pakistan",
-    period: "YYYY – YYYY",         // TODO: fill manually
+    title: "Intermediate in Computer Science",
+    org: "(Board) - Intermediate",
+    location: "Gujrat, Pakistan",
+    period: "-",
     bullets: [
-      "TODO: add your GPA / academic standing",
-      "TODO: add notable coursework",
-      "TODO: add clubs, societies, or leadership roles",
+      "Approx. 72%",
     ],
-    tech: ["Java", "Spring Boot", "Next.js", "Laravel", "Databases"],
+    tech: ["HTML", "CSS", "Programming Fundamentals"],
     color: "#00C6FF",
+  },
+  {
+    type: "education" as const,
+    title: "Matriculation",
+    org: "(Board) - Matriculation",
+    location: "Gujrat, Pakistan",
+    period: "-",
+    bullets: [
+      "Approx. 90%",
+    ],
+    tech: [],
+    color: "#00C6FF",
+  },
+  {
+    type: "training" as const,
+    title: "C++ Programming Internship & Training",
+    org: "Arch Technologies",
+    location: "",
+    period: "Feb 1 - Mar 25, 2026",
+    bullets: [
+      "Completed structured C++ programming internship and training program.",
+      "Recognized for professionalism, punctuality, and growth potential.",
+    ],
+    tech: ["C++", "Problem Solving"],
+    color: "#FF0055",
   },
 ];
 
