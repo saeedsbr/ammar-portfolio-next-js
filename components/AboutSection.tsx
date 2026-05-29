@@ -1,33 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { personal, stats, achievements } from '@/app/data/portfolio';
-
-function CountUp({ to, suffix = '' }: { to: number; suffix?: string }) {
-  const [n, setN] = useState(0);
-  const [go, setGo] = useState(false);
-  const ref = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setGo(true); }, { threshold: .3 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!go) return;
-    let frame = 0;
-    const total = 55;
-    const id = setInterval(() => {
-      frame++;
-      setN(Math.round((frame / total) * to));
-      if (frame >= total) clearInterval(id);
-    }, 22);
-    return () => clearInterval(id);
-  }, [go, to]);
-
-  return <span ref={ref}>{n.toLocaleString()}{suffix}</span>;
-}
+import { personal, achievements } from '@/app/data/portfolio';
 
 export default function AboutSection() {
   return (
@@ -79,22 +53,7 @@ export default function AboutSection() {
           </figure>
         </div>
 
-        {/* 2×2 stat grid */}
-        <div className="stat-grid">
-          {[
-            { label: 'LeetCode Rating', value: stats.leetcodeRating, suffix: '' },
-            { label: 'GitHub Commits / yr', value: stats.githubCommits, suffix: '+' },
-            { label: 'OSS PRs Merged', value: stats.opensourcePrs, suffix: '' },
-            { label: 'Hackathons Won', value: stats.hackathonsWon, suffix: '×' },
-          ].map(s => (
-            <div className="stat-cell" key={s.label}>
-              <div className="stat-value">
-                <CountUp to={s.value} suffix={s.suffix} />
-              </div>
-              <div className="stat-label">{s.label}</div>
-            </div>
-          ))}
-        </div>
+        {/* Stats removed per user request */}
 
         {/* Achievements row */}
         <div style={{ display: 'grid', gap: '.75rem', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>

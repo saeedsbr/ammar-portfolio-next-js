@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { personal, stats } from '@/app/data/portfolio';
+import { personal } from '@/app/data/portfolio';
 
 /* ── Terminal typing animation ──────────────────── */
 type Seg = { t: string; c: string };
@@ -223,24 +223,7 @@ export default function HeroSection() {
           <div>
             <Terminal />
 
-            {/* Stat strip */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--line-strong)', border: '1px solid var(--line-strong)', borderRadius: 8, overflow: 'hidden', marginTop: '.75rem' }}>
-              {[
-                { label: 'LeetCode',  value: stats.leetcodeRating.toString() },
-                { label: 'Commits/yr', value: `${stats.githubCommits}+` },
-                { label: 'Papers',    value: stats.papersRead.toString() },
-                { label: 'Hackathons', value: `${stats.hackathonsWon}×` },
-              ].map(s => (
-                <div key={s.label} style={{ background: 'var(--surface)', padding: '1rem .85rem', textAlign: 'center' }}>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--gold)', letterSpacing: '-.03em', lineHeight: 1 }}>
-                    {s.value}
-                  </div>
-                  <div style={{ fontSize: '.65rem', fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '.05em', marginTop: '.35rem' }}>
-                    {s.label}
-                  </div>
-                </div>
-              ))}
-            </div>
+            {/* Stats removed per user request */}
           </div>
         </div>
 
