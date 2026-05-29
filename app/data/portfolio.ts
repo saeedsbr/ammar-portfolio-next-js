@@ -15,11 +15,10 @@ export const personal = {
   twitter: "",
   leetcode: "",
   resumeUrl: "/resume.pdf",
-  university: "YOUR UNIVERSITY",       // TODO: fill manually
   degree: "Bachelor of Computer Science",
-  graduation: "2024 - 2028",
   university: "University of Management and Technology, Lahore",
-  gpa: "",                             // TODO: fill manually
+  graduation: "2024 - 2028",
+  gpa: "",
   gpaMax: "4.0",
   status: "Open to opportunities",
   bio: "Motivated software developer with hands-on experience building responsive web interfaces and practical full-stack applications. Strong foundation in Laravel, PHP, Next.js, Spring Boot and C++ programming. Focused on clean structure, team-ready code and real user workflows.",
