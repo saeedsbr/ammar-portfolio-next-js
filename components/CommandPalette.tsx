@@ -22,8 +22,11 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
 
   const filtered = COMMANDS.filter(c => c.label.toLowerCase().includes(query.toLowerCase()));
 
-  useEffect(() => { if (open) { setQuery(''); setCursor(0); setTimeout(() => inputRef.current?.focus(), 10); } }, [open]);
-  useEffect(() => { setCursor(0); }, [query]);
+  useEffect(() => {
+    if (!open) return;
+    const t = setTimeout(() => inputRef.current?.focus(), 10);
+    return () => clearTimeout(t);
+  }, [open]);
 
   const run = useCallback((cmd: typeof COMMANDS[0]) => { cmd.action(); onClose(); }, [onClose]);
 
@@ -50,7 +53,7 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
             className="cmd-input"
             placeholder="Type a command or search..."
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={e => { setQuery(e.target.value); setCursor(0); }}
           />
           <kbd style={{ color: 'var(--text-3)', fontSize: '.72rem', flexShrink: 0 }}>ESC</kbd>
         </div>
@@ -58,7 +61,7 @@ export default function CommandPalette({ open, onClose }: { open: boolean; onClo
         <div className="cmd-items">
           {filtered.length === 0 && (
             <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-3)', fontSize: '.88rem' }}>
-              No results for "{query}"
+              No results for &quot;{query}&quot;
             </p>
           )}
           {filtered.map((cmd, i) => (

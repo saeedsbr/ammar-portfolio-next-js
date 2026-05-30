@@ -1,3 +1,5 @@
+ 'use client';
+
 import { personal } from '@/app/data/portfolio';
 
 export default function ContactSection() {
@@ -10,16 +12,19 @@ export default function ContactSection() {
     >
       <div className="container" style={{ display: 'grid', gap: '1.5rem', textAlign: 'center' }}>
 
-        <div className="contact-panel">
+        <div className="contact-panel fade-up">
           <p className="contact-kicker">Contact</p>
           <h2 id="contact-title">
-            Let's build something that holds up under real conditions.
+            Let&apos;s build something that holds up under real conditions.
           </h2>
           <p style={{ maxWidth: '36rem', color: 'var(--text-2)', lineHeight: 1.75, fontSize: '.95rem' }}>
             Open to internship opportunities, research collaborations, and interesting engineering
-            problems. If the work is technically challenging — I'm interested.
+            problems. If the work is technically challenging — I&apos;m interested.
           </p>
-          <a className="contact-email" href={`mailto:${personal.email}`}>
+          <a
+            className="contact-email"
+            href={`mailto:${personal.email}`}
+          >
             {personal.email}
           </a>
         </div>

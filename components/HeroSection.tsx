@@ -167,12 +167,15 @@ export default function HeroSection() {
       </div>
 
       <div className="container hero-content">
-        <div style={{ display: 'grid', gap: '3.5rem', alignItems: 'center' }} className="hero-grid">
+        <div className="hero-grid">
 
           {/* Left: headline */}
           <div>
             {/* Status */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '.55rem', marginBottom: '1.4rem' }}>
+            <div
+              className="fade-up"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '.55rem', marginBottom: '1.4rem' }}
+            >
               <span
                 className="status-dot pulse-dot"
                 style={{ background: '#c9a961' }}
@@ -182,13 +185,15 @@ export default function HeroSection() {
               </span>
             </div>
 
-            <h1 id="hero-title">{personal.name}</h1>
+            <h1 id="hero-title" className="fade-up" style={{ animationDelay: '70ms' }}>{personal.name}</h1>
 
-            <p className="hero-sub">{personal.title}. {personal.subtitle.split('·')[0].trim()}.</p>
+            <p className="hero-sub fade-up" style={{ animationDelay: '140ms' }}>
+              {personal.title}. {personal.subtitle.split('·')[0].trim()}.
+            </p>
 
-            <p className="hero-desc">{personal.bio}</p>
+            <p className="hero-desc fade-up" style={{ animationDelay: '210ms' }}>{personal.bio}</p>
 
-            <div className="hero-actions">
+            <div className="hero-actions fade-up" style={{ animationDelay: '280ms' }}>
               <a className="btn-primary" href={personal.resumeUrl} download>
                 Download CV
               </a>
@@ -198,7 +203,10 @@ export default function HeroSection() {
             </div>
 
             {/* Social links */}
-            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '2rem', alignItems: 'center' }}>
+            <div
+              className="fade-up"
+              style={{ display: 'flex', gap: '1.5rem', marginTop: '2rem', alignItems: 'center' }}
+            >
               {[
                 { label: 'GitHub',   href: personal.github },
                 { label: 'LinkedIn', href: personal.linkedin },
@@ -210,8 +218,6 @@ export default function HeroSection() {
                   target="_blank"
                   rel="noreferrer"
                   style={{ color: 'var(--text-3)', fontSize: '.82rem', fontWeight: 600, textDecoration: 'none' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--gold)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-3)'; }}
                 >
                   {s.label}
                 </a>
@@ -220,7 +226,7 @@ export default function HeroSection() {
           </div>
 
           {/* Right: terminal */}
-          <div>
+          <div className="hero-terminal fade-up" style={{ animationDelay: '160ms' }}>
             <Terminal />
 
             {/* Stats removed per user request */}
@@ -228,7 +234,9 @@ export default function HeroSection() {
         </div>
 
         {/* Scroll hint */}
-        <div style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem' }}>
+        <div
+          style={{ position: 'absolute', bottom: '2.5rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '.5rem' }}
+        >
           <span style={{ color: 'var(--text-3)', fontSize: '.72rem', fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase' }}>
             scroll
           </span>

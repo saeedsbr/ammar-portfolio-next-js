@@ -1,5 +1,6 @@
+'use client';
+
 import { experience } from '@/app/data/portfolio';
-import useInView from './useInView';
 
 export default function ExperienceSection() {
   return (
@@ -12,37 +13,33 @@ export default function ExperienceSection() {
 
         <article className="exp-timeline">
           {experience.map((exp, i) => {
-            const Item = () => {
-              const { ref, inView } = useInView(0.12);
-              return (
-                <div
-                  ref={ref as any}
-                  className={`exp-timeline ${inView ? 'fade-up in-view' : 'fade-up'}`}
-                  style={i > 0 ? { marginBlockStart: '1.25rem' } : {}}
-                >
-                  <div className="exp-card">
-                    <div className="experience-main">
-                      <h3 style={{ fontSize: '1.1rem', fontWeight: 600, lineHeight: 1.3 }}>
-                        {exp.title}
-                      </h3>
-                      <p className="exp-org">{exp.org}</p>
-                      <p className="exp-meta">{exp.period} &nbsp;·&nbsp; {exp.location}</p>
-                      <ul className="exp-bullets">
-                        {exp.bullets.map((b, j) => <li key={j}>{b}</li>)}
-                      </ul>
-                    </div>
-
-                    <aside className="exp-stack" aria-label="Tech Stack">
-                      <p className="exp-stack-title">Tech Stack</p>
-                      <ul className="exp-stack-list">
-                        {exp.tech.map(t => <li key={t}>{t}</li>)}
-                      </ul>
-                    </aside>
+            return (
+              <div
+                key={i}
+                className="exp-timeline fade-up"
+                style={{ marginBlockStart: i > 0 ? '1.25rem' : undefined, animationDelay: `${i * 110}ms` }}
+              >
+                <div className="exp-card">
+                  <div className="experience-main">
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, lineHeight: 1.3 }}>
+                      {exp.title}
+                    </h3>
+                    <p className="exp-org">{exp.org}</p>
+                    <p className="exp-meta">{exp.period} &nbsp;·&nbsp; {exp.location}</p>
+                    <ul className="exp-bullets">
+                      {exp.bullets.map((b, j) => <li key={j}>{b}</li>)}
+                    </ul>
                   </div>
+
+                  <aside className="exp-stack" aria-label="Tech Stack">
+                    <p className="exp-stack-title">Tech Stack</p>
+                    <ul className="exp-stack-list">
+                      {exp.tech.map(t => <li key={t}>{t}</li>)}
+                    </ul>
+                  </aside>
                 </div>
-              );
-            };
-            return <Item key={i} />;
+              </div>
+            );
           })}
         </article>
 

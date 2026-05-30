@@ -4,9 +4,9 @@ import { personal, achievements } from '@/app/data/portfolio';
 import useInView from './useInView';
 
 function CurrentlyBlock() {
-  const { ref, inView } = useInView(0.12);
+  const { ref, inView } = useInView<HTMLDivElement>(0.12);
   return (
-    <div ref={ref as any} className={`fade-up ${inView ? 'in-view' : ''}`} style={{
+    <div ref={ref} className={`fade-up ${inView ? 'in-view' : ''}`} style={{
       padding: '1.4rem',
       border: '1px solid var(--line-strong)',
       borderRadius: 8,
@@ -30,11 +30,11 @@ function CurrentlyBlock() {
 }
 
 function AchievementCard({ a, i }: { a: typeof achievements[0]; i: number }) {
-  const { ref, inView } = useInView(0.12);
+  const { ref, inView } = useInView<HTMLDivElement>(0.12);
   return (
     <div
+      ref={ref}
       key={i}
-      ref={ref as any}
       className={`fade-up ${inView ? 'in-view' : ''}`}
       style={{
         display: 'flex',
@@ -69,11 +69,11 @@ export default function AboutSection() {
         </div>
 
         {/* Main about card */}
-        <div className="about-card about-layout">
+        <div className="about-card about-layout fade-up">
           <div className="about-copy">
             <p>{personal.bio}</p>
             <p>
-              When I'm not writing code, I'm reading distributed systems papers, grinding algorithmic
+              When I&apos;m not writing code, I&apos;m reading distributed systems papers, grinding algorithmic
               problems, or mentoring at hackathons. I believe great software is precise, observable,
               and built to last — not just to ship.
             </p>
@@ -92,7 +92,10 @@ export default function AboutSection() {
           </div>
 
           {/* Portrait placeholder */}
-          <figure className="about-portrait" aria-label={personal.name}>
+          <figure
+            className="about-portrait"
+            aria-label={personal.name}
+          >
             <div style={{
               width: '100%', height: '100%',
               display: 'flex', flexDirection: 'column',

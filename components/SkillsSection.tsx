@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { skills, techCloud } from '@/app/data/portfolio';
+import useInView from './useInView';
 
 type Tab = 'languages' | 'frameworks' | 'tools';
 const TABS: { key: Tab; label: string }[] = [
@@ -12,21 +13,7 @@ const TABS: { key: Tab; label: string }[] = [
 
 export default function SkillsSection() {
   const [tab, setTab] = useState<Tab>('languages');
-  const [vis, setVis] = useState(false);
-  const [animate, setAnimate] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVis(true); }, { threshold: .1 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
-
-  useEffect(() => {
-    setAnimate(false);
-    const t = setTimeout(() => setAnimate(vis), 60);
-    return () => clearTimeout(t);
-  }, [tab, vis]);
+  const { ref, inView } = useInView<HTMLDivElement>(0.1);
 
   return (
     <section id="skills" className="section section-banded" aria-labelledby="skills-title" ref={ref}>
@@ -37,9 +24,14 @@ export default function SkillsSection() {
         </div>
 
         {/* Tech cloud */}
-        <div className="tech-cloud">
+        <div className="tech-cloud fade-up">
           {techCloud.map(t => (
-            <span key={t} className="tech-pill">{t}</span>
+            <span
+              key={t}
+              className="tech-pill"
+            >
+              {t}
+            </span>
           ))}
         </div>
 
@@ -49,6 +41,7 @@ export default function SkillsSection() {
             {TABS.map(t => (
               <button
                 key={t.key}
+                type="button"
                 className={`skill-tab ${tab === t.key ? 'active' : ''}`}
                 onClick={() => setTab(t.key)}
               >
@@ -65,7 +58,7 @@ export default function SkillsSection() {
                   <div
                     className="skill-fill"
                     style={{
-                      inlineSize: animate ? `${s.level}%` : '0%',
+                      inlineSize: inView ? `${s.level}%` : '0%',
                       transitionDelay: `${i * 60}ms`,
                     }}
                   />
@@ -86,7 +79,9 @@ export default function SkillsSection() {
           ].map((s, i) => (
             <div
               key={i}
+              className="fade-up"
               style={{
+                animationDelay: `${i * 90}ms`,
                 padding: '1.1rem',
                 border: '1px solid var(--line-strong)',
                 borderRadius: 8,

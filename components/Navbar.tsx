@@ -32,7 +32,7 @@ export default function Navbar() {
 
   return (
     <>
-      <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
+      <CommandPalette key={cmdOpen ? 'open' : 'closed'} open={cmdOpen} onClose={() => setCmdOpen(false)} />
 
       <header
         className="site-header"
@@ -63,6 +63,7 @@ export default function Navbar() {
           <div style={{ position: 'absolute', insetBlockStart: '50%', insetInlineEnd: 0, transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
             <button
               className="cmd-badge"
+              type="button"
               onClick={() => setCmdOpen(true)}
               aria-label="Open command palette"
             >

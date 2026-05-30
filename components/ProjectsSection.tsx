@@ -22,6 +22,7 @@ export default function ProjectsSection() {
           {CATS.map(c => (
             <button
               key={c}
+              type="button"
               className={`skill-tab ${cat === c ? 'active' : ''}`}
               onClick={() => setCat(c)}
             >
@@ -35,7 +36,11 @@ export default function ProjectsSection() {
 
         <div className="project-grid">
           {filtered.map(p => (
-            <article className="project-card" key={p.id}>
+            <article
+              key={p.id}
+              className="project-card fade-up"
+              style={{ animationDelay: `${p.id * 90}ms` }}
+            >
               {/* Image area */}
               <figure className="project-media">
                 <div style={{
